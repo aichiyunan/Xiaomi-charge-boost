@@ -158,7 +158,7 @@ menu $((S4+2)) "充电监测软件" "配合${MODNAME}使用的充电监测 App�
 CM=$SEL
 DR=0; DO=$D/dtbo.out; true > $DO 2>/dev/null || { DO=/dev/mcb_dtbo.out; true > $DO; }
 if [ "$DI$DT$DV$DZ" != "----" ]; then
-  chmod 755 $MODPATH/dtbo/dtbopatch
+  chmod 755 $MODPATH/dtbo/dtbopatch $MODPATH/dtbo/dtbopatch.bin $MODPATH/dtbo/dtbofv $MODPATH/dtbo/dtbofv.bin $MODPATH/dtbo/dtbomulti
   sh $MODPATH/dtbo/apply.sh $DI $DV $DT $DZ > $DO 2>&1; DR=$?
   grep -q "^! " $DO && DR=1
 fi

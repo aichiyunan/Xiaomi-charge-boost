@@ -2,6 +2,29 @@
 
 所有版本刷入包都在 [`releases/`](releases/) 目录。
 
+## v8.7.0（2026-11-14）
+
+适配 6.12 / 6.18 内核的小米、红米骁龙机型，dtbo 模板按处理器代号分目录。
+
+| 模板目录 | 机型（代号） | 原厂快充电流 |
+| --- | --- | --- |
+| `dtbo/8750/`（骁龙8至尊版） | 小米15 dada、小米15 Pro haotian、红米K80 Pro miro、红米K90 annibale、红米K90至尊版 warsaw | 原有机型 |
+| `dtbo/8850/`（6.12） | 小米17 pudding、小米17 Max byron、红米K90 Pro Max myron、红米K100 Pro athens、红米K100 Pro Max songyuan | 18.4A |
+| `dtbo/8850/`（6.12） | 小米17 Pro pandora、小米17 Pro Max popsicle | 18A |
+| `dtbo/8850/`（6.12） | 小米17 Ultra nezha | 15.6A |
+| `dtbo/8950/`（6.18） | 小米18 Pro hongkong | 18.2A |
+| `dtbo/8975/`（6.18） | 小米18 Pro Max madrid | 18A |
+
+- 新机型模板由官方 OS4 卡刷包里的原厂 dtbo 生成，电流上限 20.5A；新机型暂不提供私有协议可选功率档
+- 补红米K90至尊版 OS4.0.8 模板（warsaw_os4c），60 项全部可写
+- models.sh 新增 SOC 字段；未适配机型读 ro.soc.model（如 SM8850 → 8850），逐项比对优先用同处理器模板
+- 6.12 起 dtbo 有多个内容相同的 entry：dtbopatch / dtbofv 外包一层脚本，配合新增 dtbomulti 逐个 entry 打补丁并重算 AVB 哈希（与原厂一致）
+- real_curr_max / curr_monitor_current 保持原厂差值，non_mi_pps_max_curr 跟随所选电流；quick_charge 的 max_power 改为可选（6.12 起没有该行）
+- 屏幕超频 165Hz、高刷切换仍只限小米15；其它机型刷入时不出现超频选项，WebUI 也隐藏
+- 小米15 / K90 / K90至尊版的写入结果与 v8.6.5 逐字节一致
+
+- [`releases/Micharge-boost_v8.7.0.zip`](releases/Micharge-boost_v8.7.0.zip)　md5 `5876c9f90d7ab6bd5f2c70016df975e1`
+
 ## v8.6.5（2026-11-14）
 
 本版起只发布 Micharge-boost 一个刷入包（Mi8Elite 专版停止更新）。
