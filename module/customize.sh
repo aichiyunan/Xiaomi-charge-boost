@@ -166,7 +166,8 @@ ui_print " "
 ui_print "======== 确认结果 ========"
 if [ "$DI$DT$DV$DZ" != "----" ]; then
   if [ $DR = 0 ]; then ui_print "✅ dtbo 刷入成功，重启生效"
-  else ui_print "❌ dtbo 刷入失败，分区未改动"; ui_print "   原因: $(grep '^! ' $DO | tail -1 | sed 's/^! //')"; fi
+  elif grep -q '回滚失败' $DO; then ui_print "❌ dtbo 写入失败且回滚失败，分区内容不确定"; ui_print "   请勿重启，先手动刷回原厂 dtbo"
+  else ui_print "❌ dtbo 刷入失败"; ui_print "   原因: $(grep '^! ' $DO | tail -1 | sed 's/^! //')"; fi
 fi
 f(){ [ "$1" = - ] && echo 不修改 || echo "$1$2"; }
 if true; then

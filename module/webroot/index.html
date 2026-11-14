@@ -251,8 +251,10 @@ input[type=range]{width:100%;accent-color:#2b5cff;margin:6px 0 2px}
 <div id="dzfb" class="dzoff"><div class="hd"><span style="font-size:13px;color:var(--sub)">满充截止电压</span><label><input type="number" id="dzfn" min="4490" max="4650" step="1" value="4580" inputmode="numeric">mV</label></div>
 <input type="range" id="dzf" min="4490" max="4650" step="10" value="4580"><div class="rg"><span>4490</span><span id="dzf0">原厂 4580 mV</span><span>4650 mV</span></div>
 </div><div style="font-size:11px;color:var(--sub)">关闭时不改满充截止电压（保持原厂），滑块置灰防误触。打开后按设定值调整 FFC 截止电压，默认本机原厂值；调高可多充一点电量，但电池老化更快</div></div>
+<div class="it" id="dzor"><div class="hd"><span>放宽充电泵过压（测试）</span><label class="tsw"><input type="checkbox" id="dzoon"><i></i></label></div>
+<div style="font-size:11px;color:var(--sub)">默认关闭。打开后 sc8585 电池过压 4700→4750mV、告警 4650→4700mV，用于提高满充截止电压后大电流下反复触发 CpVbatOvp、快充来回跳的情况。只放宽 50mV，不关闭保护；仅小米15</div></div>
 <div class="it" id="dzzr"><div class="hd"><span>屏幕超频</span><span id="dzzb" style="display:flex;gap:6px"><button data-z="165" style="padding:4px 12px;font-size:12px;border-radius:999px">165Hz</button><button data-z="-" style="padding:4px 12px;font-size:12px;border-radius:999px">不超频</button></span></div>
-<div style="font-size:11px;color:var(--sub)">华星屏添加 132/144/155/165Hz 档位</div></div>
+<div style="font-size:11px;color:var(--sub)">华星屏添加 132/144/156/165Hz 档位</div></div>
 <div style="font-size:11px;color:var(--sub);padding:8px 0 0">各项默认本机原厂值，等于原厂值的项保持原厂不改。设定温度以下满速，超过即停充。写入 dtbo 并重算 AVB，重启后生效；原版自动备份。</div>
 <div class="bt"><button class="w" id="dzok">写入（重启生效）</button><button class="w red" id="dzrst">还原原版</button></div>
 <pre id="dzlog" style="font-size:11px;white-space:pre-wrap;margin:8px 0 0;color:var(--sub)" hidden></pre>
@@ -264,27 +266,12 @@ input[type=range]{width:100%;accent-color:#2b5cff;margin:6px 0 2px}
 <details class="pplg" id="prlg"><summary>修改日志</summary><pre id="prlog" style="font-size:11px;white-space:pre-wrap;margin:4px 0 0;color:var(--sub);max-height:160px;overflow:auto">--</pre></details>
 </div>
 </details>
-<div class="card dz-in" id="ccc">
-<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:16px">实时充电电流</b><label class="tsw"><input type="checkbox" id="ccon"><i></i></label></div>
-<div style="font-size:11px;color:var(--sub);margin-top:6px">免重启，充电中调节的上限在拔出充电器 3 秒后生效，未充电时调节立即保存。最高不超过 DTBO 里写入的快充电流和断充温度（改 DTBO 重启后跟着变），实际电流还受电量和温度影响；被系统温控改写会自动补写，关闭后交还系统温控。</div>
-<div class="it" id="ccmbx"><div class="hd"><span>电流上限</span><label><input type="number" id="ccmn" min="1000" max="22000" step="100" value="22000" inputmode="numeric">mA</label></div>
-<input type="range" id="ccm" min="1000" max="22000" step="100" value="22000"><div class="rg"><span>1000</span><span id="ccmx">22000 mA</span></div></div>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><b style="font-size:16px">断充温控墙</b><label class="tsw"><input type="checkbox" id="cwon"><i></i></label></div>
-<div id="cwbx">
-<div class="it"><div class="hd"><span>温度上限</span><label><input type="number" id="cwt3n" min="40" max="58" step="1" value="54" inputmode="numeric">°C</label></div>
-<input type="range" id="cwt3" min="40" max="58" step="1" value="54"><div class="rg"><span>40</span><span id="cwtmx">58 °C</span></div>
-<div style="font-size:11px;color:var(--sub);margin-top:4px">按电池真实温度判断，到达即停充，降 3°C 恢复。</div></div>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span style="font-size:13px;color:var(--sub)">按温度限流</span><label class="tsw"><input type="checkbox" id="cwlim"><i></i></label></div>
-<div id="cwlbx">
-<div class="row"><span>≥ <input type="number" id="cwt1" min="30" max="58" step="1" value="42" inputmode="numeric" style="width:60px"> °C</span><span>限 <input type="number" id="cwc1" min="1000" max="22000" step="100" value="12000" inputmode="numeric" style="width:96px"> mA</span></div>
-<div class="row"><span>≥ <input type="number" id="cwt2" min="30" max="58" step="1" value="46" inputmode="numeric" style="width:60px"> °C</span><span>限 <input type="number" id="cwc2" min="1000" max="22000" step="100" value="6000" inputmode="numeric" style="width:96px"> mA</span></div>
-</div>
-<div class="bt"><button class="w" id="cwok">应用温控墙</button></div>
-</div>
-<div class="row" style="margin-top:6px"><span>状态</span><span id="ccst">读取中…</span></div>
-<div class="row"><span>电池温度 / 墙档位</span><span id="cwst">--</span></div>
-<div class="row"><span>节点上限 / 电池电流</span><span id="cccur">--</span></div>
-<details class="pplg"><summary>运行记录</summary><pre id="cclog" style="font-size:11px;white-space:pre-wrap;margin:4px 0 0;color:var(--sub);max-height:120px;overflow:auto">--</pre></details>
+<div class="card" id="trc">
+<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:16px">解除温控降速</b><label class="tsw"><input type="checkbox" id="tron"><i></i></label></div>
+<div style="font-size:11px;color:var(--sub);margin-top:6px">实时生效，无需重启。去掉系统温控对快充电流的限制，发热时不再降速；电流上限与断充温度仍按上方 DTBO 设定。</div>
+<div class="row" style="margin-top:6px"><span>状态</span><span id="trst">读取中…</span></div>
+<div class="row"><span>节点值</span><span id="trcur">--</span></div>
+<details class="pplg"><summary>运行记录</summary><pre id="trlog" style="font-size:11px;white-space:pre-wrap;margin:4px 0 0;color:var(--sub);max-height:120px;overflow:auto">--</pre></details>
 </div>
 
 <div class="card" id="ppc">
@@ -308,12 +295,27 @@ input[type=range]{width:100%;accent-color:#2b5cff;margin:6px 0 2px}
 <div class="row"><span>停充 / 已恢复</span><span id="qrcnt">--</span></div>
 <details class="pplg"><summary>运行记录</summary><pre id="qrlog" style="font-size:11px;white-space:pre-wrap;margin:4px 0 0;color:var(--sub);max-height:120px;overflow:auto">--</pre></details>
 </div>
-<div class="card" id="trc">
-<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:16px">解除温控降速<span style="font-size:10px;font-weight:600;color:#f59e0b;border:1px solid #f59e0b;border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:2px">实验性</span></b><label class="tsw"><input type="checkbox" id="tron"><i></i></label></div>
-<div style="font-size:11px;color:var(--sub);margin-top:6px">实时生效，无需重启。去掉系统温控对快充电流的限制，发热时不再降速；电流上限与断充温度仍按上方 DTBO 设定。</div>
-<div class="row" style="margin-top:6px"><span>状态</span><span id="trst">读取中…</span></div>
-<div class="row"><span>节点值</span><span id="trcur">--</span></div>
-<details class="pplg"><summary>运行记录</summary><pre id="trlog" style="font-size:11px;white-space:pre-wrap;margin:4px 0 0;color:var(--sub);max-height:120px;overflow:auto">--</pre></details>
+<div class="card dz-in" id="ccc">
+<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:16px">实时充电电流<span style="font-size:10px;font-weight:600;color:#f59e0b;border:1px solid #f59e0b;border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:2px">实验性</span></b><label class="tsw"><input type="checkbox" id="ccon"><i></i></label></div>
+<div style="font-size:11px;color:var(--sub);margin-top:6px">免重启，充电中调节的上限在拔出充电器 3 秒后生效，未充电时调节立即保存。最高不超过 DTBO 里写入的快充电流和断充温度（改 DTBO 重启后跟着变），实际电流还受电量和温度影响；被系统温控改写会自动补写，关闭后交还系统温控。</div>
+<div class="it" id="ccmbx"><div class="hd"><span>电流上限</span><label><input type="number" id="ccmn" min="1000" max="22000" step="100" value="22000" inputmode="numeric">mA</label></div>
+<input type="range" id="ccm" min="1000" max="22000" step="100" value="22000"><div class="rg"><span>1000</span><span id="ccmx">22000 mA</span></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px"><b style="font-size:16px">断充温控墙</b><label class="tsw"><input type="checkbox" id="cwon"><i></i></label></div>
+<div id="cwbx">
+<div class="it"><div class="hd"><span>温度上限</span><label><input type="number" id="cwt3n" min="40" max="58" step="1" value="54" inputmode="numeric">°C</label></div>
+<input type="range" id="cwt3" min="40" max="58" step="1" value="54"><div class="rg"><span>40</span><span id="cwtmx">58 °C</span></div>
+<div style="font-size:11px;color:var(--sub);margin-top:4px">按电池真实温度判断，到达即停充，降 3°C 恢复。</div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span style="font-size:13px;color:var(--sub)">按温度限流</span><label class="tsw"><input type="checkbox" id="cwlim"><i></i></label></div>
+<div id="cwlbx">
+<div class="row"><span>≥ <input type="number" id="cwt1" min="30" max="58" step="1" value="42" inputmode="numeric" style="width:60px"> °C</span><span>限 <input type="number" id="cwc1" min="1000" max="22000" step="100" value="12000" inputmode="numeric" style="width:96px"> mA</span></div>
+<div class="row"><span>≥ <input type="number" id="cwt2" min="30" max="58" step="1" value="46" inputmode="numeric" style="width:60px"> °C</span><span>限 <input type="number" id="cwc2" min="1000" max="22000" step="100" value="6000" inputmode="numeric" style="width:96px"> mA</span></div>
+</div>
+<div class="bt"><button class="w" id="cwok">应用温控墙</button></div>
+</div>
+<div class="row" style="margin-top:6px"><span>状态</span><span id="ccst">读取中…</span></div>
+<div class="row"><span>电池温度 / 墙档位</span><span id="cwst">--</span></div>
+<div class="row"><span>节点上限 / 电池电流</span><span id="cccur">--</span></div>
+<details class="pplg"><summary>运行记录</summary><pre id="cclog" style="font-size:11px;white-space:pre-wrap;margin:4px 0 0;color:var(--sub);max-height:120px;overflow:auto">--</pre></details>
 </div>
 
 <div class="card ack">
@@ -328,7 +330,7 @@ input[type=range]{width:100%;accent-color:#2b5cff;margin:6px 0 2px}
 <div class="card"><div class="hzc"><div class="big" id="hzcur">--<small>Hz</small></div><span class="hzt" id="hzst">读取中</span></div>
 <div style="font-size:12px;color:var(--sub);margin-top:8px" id="hzmeta">目标 -- Hz</div></div>
 <div class="card hzm" id="fpgo"><div><b>实时刷新率检测</b><i>通过连续帧时间检测实际获得的刷新率</i></div><span>›</span></div>
-<div class="card"><div style="font-size:12px;color:var(--sub);margin-bottom:8px">点选档位，超频档自动逐级切换；120 = 交还系统调度</div>
+<div class="card"><div style="font-size:12px;color:var(--sub);margin-bottom:8px">点选档位，超频档自动逐级切换；120 = 锁定 120（关掉开关才交还系统调度）</div>
 <div class="hzg" id="hzg"></div>
 <div style="font-size:11px;color:var(--sub);margin-top:8px" id="hzna" hidden>当前 dtbo 没有超频档位：在「充电配置」选 165Hz 写入并重启后可用</div></div>
 <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-size:14px">切换过程</b><button id="hzrl" style="border:0;background:none;color:#2b5cff;padding:0;font-size:13px">刷新</button></div><details class="pplg" style="margin-top:0"><summary>内核日志</summary><pre class="hzp" id="hzlog" style="margin-top:4px">--</pre></details></div>
@@ -489,7 +491,7 @@ async function mdlLoad(){try{const r=await exec('sh '+MOD+'/model.sh');const j=J
   $('dzv0').textContent='原厂 '+MDL.v0+' mV';$('dzf0').textContent=F0?'原厂 '+F0+' mV':'原厂未识别';
   $('dzfr').classList.toggle('dzoff',!F0);
   if(!$('dzi').dataset.set){dzSet('dzi',MDL.istock);dzSet('dzv',MDL.v0);dzSet('dzt',DZT0);if(F0)dzSet('dzf',F0);dzVon(false);dzFon(false);}
-  $('dzzr').style.display=MDL.hz==1?'':'none';if(MDL.hz!=1)dzZ('-');
+  $('dzzr').style.display=MDL.hz==1?'':'none';$('dzor').style.display=MDL.hz==1?'':'none';if(MDL.hz!=1)$('dzoon').checked=false;if(MDL.hz!=1)dzZ('-');
   [100,120].forEach(v=>{const el=$('pr'+v);if(el)el.closest('.pri').style.display=MDL.pwo.includes(v)?'':'none';});
   if(!MDL.pwo.length)$('pr100').closest('.prg').style.display='none';
   $('prds').textContent=MDL.pwo.length?('默认原厂 '+MDL.pw0+'W。开启后提高小米私有快充的功率上限，需小米 '+MDL.pwo.join('W/')+'W 原装充电头。写入 dtbo，重启生效。实际功率还受充电泵和电池限制。'):('本机原厂已是 '+MDL.pw0+'W 小米私有协议，无需修改。');}
@@ -962,19 +964,19 @@ let DZZ='-';function dzZ(z){DZZ=z==='165'?'165':'-';document.querySelectorAll('#
 document.querySelectorAll('#dzzb button').forEach(b=>b.onclick=()=>dzZ(b.dataset.z));dzZ('-');
 // 等于原厂值的项传 -（保持原厂不改）
 const dzArg=()=>{const i=dzSet('dzi',$('dzin').value),t=dzSet('dzt',$('dztn').value),v=$('dzvon').checked?dzSet('dzv',$('dzvn').value):'-',f=(MDL.fv0&&$('dzfon').checked)?dzSet('dzf',$('dzfn').value):'-';
-  return {i:i==MDL.istock?'-':i,v:v,t:t==DZT0?'-':t,f:f==MDL.fv0?'-':f};};
+  return {i:i==MDL.istock?'-':i,v:v,t:t==DZT0?'-':t,f:f==MDL.fv0?'-':f,o:(MDL.hz==1&&$('dzoon').checked)?'cpovp':'-'};};
 async function dtStat(){const r=await exec('sh '+DT+' status');const a=r.stdout.trim().split(' ').map(x=>x==='-'?'原厂':x);
   const raw=r.stdout.trim().split(' ');if(raw[0]==='mod')dzZ(raw[4]||'-');
-  T('dzst',a[0]==='mod'?'✅ 已应用 '+a[1]+'mA / '+a[2]+'mV / '+(a[3]||58)+'°C'+(raw[4]==='165'?' / 165Hz':'')+(raw[5]&&raw[5]!=='-'?' / 协议 '+raw[5]+'W':'')+(raw[6]&&raw[6]!=='-'?' / 满充 '+raw[6]+'mV':''):a[0]==='stock'?'原版':a[0]==='changed'?'⚠️ dtbo 已还原，请重新写入':'未修改');
+  T('dzst',a[0]==='mod'?'✅ 已应用 '+a[1]+'mA / '+a[2]+'mV / '+(a[3]||58)+'°C'+(raw[4]==='165'?' / 165Hz':'')+(raw[5]&&raw[5]!=='-'?' / 协议 '+raw[5]+'W':'')+(raw[6]&&raw[6]!=='-'?' / 满充 '+raw[6]+'mV':'')+(raw[7]==='cpovp'?' / 充电泵过压放宽':''):a[0]==='stock'?'原版':a[0]==='changed'?'⚠️ dtbo 已还原，请重新写入':a[0]==='unknown'?'⚠️ 写入记录损坏，无法确认分区状态，请刷回原厂 dtbo 后重新应用':'未修改');
   if(a[0]==='mod'||a[0]==='changed'){$('dzi').dataset.set=1;const st=(x,d)=>(x&&x!=='-'&&x!=='原厂')?x:d;
     dzSet('dzi',st(raw[1],MDL.istock));const vm=st(raw[2],'');dzVon(!!vm);dzSet('dzv',vm||MDL.v0);dzSet('dzt',st(raw[3],DZT0));
-    const fm=a[0]==='mod'?st(raw[6],''):'';const fok=+fm>=4490&&+fm<=4650;dzFon(fok);if(MDL.fv0)dzSet('dzf',fok?fm:MDL.fv0);}}
+    const fm=a[0]==='mod'?st(raw[6],''):'';const fok=+fm>=4490&&+fm<=4650;dzFon(fok);if(MDL.fv0)dzSet('dzf',fok?fm:MDL.fv0);$('dzoon').checked=a[0]==='mod'&&raw[7]==='cpovp';}}
 async function dtRun(arg,btn){btn.disabled=true;$('dzlog').hidden=false;$('dzlog').textContent='正在处理，约 5 秒…';
   let r=await exec('sh '+DT+' '+arg+' 2>&1');let o=(r.stdout||'')+(r.stderr||'');$('dzlog').textContent=o;
   if(o.includes('原厂镜像校验未通过')&&confirm('原厂镜像校验未通过：当前 dtbo 不是已收录的原厂镜像（官改包可能有小改动）。\n\n是否备份当前 dtbo，并以当前镜像为底修改刷入？\n（不逐项比对原厂值，可随时写回备份）')){
     $('dzlog').textContent='以当前镜像为底写入中…';r=await exec('DTBO_CUR=1 sh '+DT+' '+arg+' 2>&1');$('dzlog').textContent=(r.stdout||'')+(r.stderr||'');}
   btn.disabled=false;dtStat();}
-$('dzok').onclick=()=>{const d=dzArg(),y=(x,u)=>x==='-'?'原厂':x+' '+u;if(confirm('写入 dtbo：快充 '+y(d.i,'mA')+'、断充 '+y(d.t,'°C')+'、满充截止电压 '+y(d.f,'mV')+'、关机电压 '+y(d.v,'mV')+(MDL.hz==1?'、屏幕'+(DZZ==='165'?'超频 165Hz':'不超频'):'')+'？\n写入后需重启生效'))dtRun(d.i+' '+d.v+' '+d.t+' '+DZZ+' '+d.f,$('dzok'));};
+$('dzok').onclick=()=>{const d=dzArg(),y=(x,u)=>x==='-'?'原厂':x+' '+u;if(confirm('写入 dtbo：快充 '+y(d.i,'mA')+'、断充 '+y(d.t,'°C')+'、满充截止电压 '+y(d.f,'mV')+'、关机电压 '+y(d.v,'mV')+(d.o==='cpovp'?'、充电泵过压放宽 50mV':'')+(MDL.hz==1?'、屏幕'+(DZZ==='165'?'超频 165Hz':'不超频'):'')+'？\n写入后需重启生效'))dtRun(d.i+' '+d.v+' '+d.t+' '+DZZ+' '+d.f+' '+d.o,$('dzok'));};
 const PR=MOD+'/proto/proto.sh';let prBusy=false;
 async function prLog(){const r=await exec('sh '+PR+' log 2>&1');const t=((r.stdout||'')+(r.stderr||'')).trim();$('prlog').textContent=t||'暂无记录';}
 async function prStat(){if(prBusy)return;const r=await exec('sh '+PR+' status');try{const j=JSON.parse(r.stdout.trim().split('\n').pop());
@@ -1003,14 +1005,14 @@ $('dzsx').onclick=()=>$('dzs').classList.remove('on');
 $('dzs').onclick=e=>{if(e.target.id==='dzs')$('dzs').classList.remove('on');};
 /* ---------- 高刷切换 ---------- */
 const HZ=MOD+'/hz/hz.sh';
-const HZL=[[120,'系统默认'],[132,'Hz'],[144,'Hz'],[156,'Hz'],[165,'最高']];
+const HZL=[[120,'锁定'],[132,'Hz'],[144,'Hz'],[156,'Hz'],[165,'最高']];
 let hzBusy=false,hzTgt=120,hzRun=false,hzAv=-1,hzOn=true;
 function hzDraw(){const g=$('hzg');g.innerHTML='';HZL.forEach(l=>{const b=document.createElement('button');
   b.className=l[0]==hzTgt?'on':'';b.disabled=!hzOn||hzBusy||(l[0]>120&&hzAv===0);b.innerHTML=l[0]+'<span>'+l[1]+'</span>';b.onclick=()=>hzSet(l[0]);g.appendChild(b);});
   $('hzna').hidden=hzAv!==0;$('hzg').style.opacity=hzOn?'':'.45';$('hzon').checked=hzOn;$('hzon').disabled=hzBusy||hzRun;}
 async function hzStat(){const r=await exec('sh '+HZ+' status');
   try{const j=JSON.parse(r.stdout.trim().split('\n').pop());hzBusy=j.busy==1;hzTgt=j.target;hzAv=j.avail;hzOn=j.on!==0;
-    $('hzcur').innerHTML=(j.cur||'--')+'<small>Hz</small>';const st=$('hzst');
+    $('hzcur').innerHTML=(j.cur>0?j.cur:'--')+'<small>Hz</small>';const st=$('hzst');
     if(hzBusy){st.textContent='切换中…';st.className='hzt bz';}
     else if(!hzOn){st.textContent='已关闭 · 系统调度';st.className='hzt';}
     else if(j.cur==0){st.textContent='等待开机完成';st.className='hzt';}
