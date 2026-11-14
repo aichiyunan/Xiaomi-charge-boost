@@ -1,4 +1,6 @@
 #!/system/bin/sh
+# 部分系统（ColorOS 移植等）上 mkdir("/") 返回 EINVAL，busybox/toybox 的 mkdir -p 会从 / 开始逐级创建而直接失败：改为跳过已存在的目录、只创建缺的那级
+mkdir(){ if [ "$1" = -p ]; then shift; _r=0; for _d in "$@"; do case $_d in /*) _p=;; *) _p=.;; esac; _o=$IFS; IFS=/; set -f; for _c in $_d; do [ -z "$_c" ] && continue; _p=$_p/$_c; [ -d "$_p" ] || command mkdir "$_p" || { _r=1; break; }; done; set +f; IFS=$_o; done; return $_r; else command mkdir "$@"; fi; }
 # 公版 PPS 解锁守护（v8.5.3）：PPS 逻辑完全由内置的 FreePPS v1.7.0 执行
 #   FreePPS 作者 Seyud（酷安@瓦力喀），GPL-3.0，https://github.com/Seyud/FreePPS
 #   本模块只改了它的路径常量（见 freepps-paths.patch），逻辑与原版一致。

@@ -1,4 +1,6 @@
 #!/system/bin/sh
+# 部分系统（ColorOS 移植等）上 mkdir("/") 返回 EINVAL，busybox/toybox 的 mkdir -p 会从 / 开始逐级创建而直接失败：改为跳过已存在的目录、只创建缺的那级
+mkdir(){ if [ "$1" = -p ]; then shift; _r=0; for _d in "$@"; do case $_d in /*) _p=;; *) _p=.;; esac; _o=$IFS; IFS=/; set -f; for _c in $_d; do [ -z "$_c" ] && continue; _p=$_p/$_c; [ -d "$_p" ] || command mkdir "$_p" || { _r=1; break; }; done; set +f; IFS=$_o; done; return $_r; else command mkdir "$@"; fi; }
 MODDIR=${0%/*}
 until [ "$(getprop sys.boot_completed)" = "1" ]; do sleep 5; done
 D0=/data/adb/mi_charge_boost; if [ -f $D0/cm_pending ] && [ -f $D0/apk/charge_monitor.apk ]; then sleep 20; cp $D0/apk/charge_monitor.apk /data/local/tmp/cm.apk; chmod 644 /data/local/tmp/cm.apk; r=$(pm install -r -g /data/local/tmp/cm.apk 2>&1); case "$r" in *UPDATE_INCOMPATIBLE*|*SIGNATURES*) pm uninstall com.yunan.chargehub >/dev/null 2>&1; r=$(pm install -r -g /data/local/tmp/cm.apk 2>&1);; esac; case "$r" in *Success*) rm -rf $D0/cm_pending $D0/apk;; esac; rm -f /data/local/tmp/cm.apk; fi

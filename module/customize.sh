@@ -1,4 +1,6 @@
 SKIPUNZIP=0
+# 部分系统（ColorOS 移植等）上 mkdir("/") 返回 EINVAL，busybox/toybox 的 mkdir -p 会从 / 开始逐级创建而直接失败：改为跳过已存在的目录、只创建缺的那级
+mkdir(){ if [ "$1" = -p ]; then shift; _r=0; for _d in "$@"; do case $_d in /*) _p=;; *) _p=.;; esac; _o=$IFS; IFS=/; set -f; for _c in $_d; do [ -z "$_c" ] && continue; _p=$_p/$_c; [ -d "$_p" ] || command mkdir "$_p" || { _r=1; break; }; done; set +f; IFS=$_o; done; return $_r; else command mkdir "$@"; fi; }
 # 机型识别（v8.5.9 起不做机型校验，只识别型号；v8.7.1 起校验处理器型号，非适配处理器退出安装；内核只识别）：已适配机型用表内参数，其它机型按通用参数安装
 # 移植系统 product 属性可能被改，优先认 vendor/odm 底包属性和 /vendor/build.prop（sysinfo.sh 同逻辑）
 MCB_ROOT=$MODPATH; . $MODPATH/models.sh

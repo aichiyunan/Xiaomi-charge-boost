@@ -1,4 +1,6 @@
 #!/system/bin/sh
+# 部分系统（ColorOS 移植等）上 mkdir("/") 返回 EINVAL，busybox/toybox 的 mkdir -p 会从 / 开始逐级创建而直接失败：改为跳过已存在的目录、只创建缺的那级
+mkdir(){ if [ "$1" = -p ]; then shift; _r=0; for _d in "$@"; do case $_d in /*) _p=;; *) _p=.;; esac; _o=$IFS; IFS=/; set -f; for _c in $_d; do [ -z "$_c" ] && continue; _p=$_p/$_c; [ -d "$_p" ] || command mkdir "$_p" || { _r=1; break; }; done; set +f; IFS=$_o; done; return $_r; else command mkdir "$@"; fi; }
 # 用法: apply.sh <电流mA> <关机电压mV> <断充温度°C> [165|-] [满充截止电压mV|-] [cpovp|-] | restore | status | fvq
 # 第 5 个参数（v8.6.4）：满充截止电压（FFC 截止电压）4490-4650mV，-=保持本机原厂；由 dtbofv 按本机 dtbo 实际值生成规则
 #   （FFC 列/分段表末级电压按差值平移、不超过设定值，FFC 过压阈值同步上调），各机型原厂值不同，WebUI 默认显示原厂值

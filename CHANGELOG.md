@@ -2,6 +2,13 @@
 
 所有版本刷入包都在 [`releases/`](releases/) 目录。
 
+## v8.7.3（2026-11-14）
+
+- 修复部分系统（如 ColorOS 移植包）刷入失败：「mkdir: can't create directory '/': Invalid argument」。这类系统上 mkdir("/") 返回 EINVAL，`mkdir -p` 从根目录逐级创建时直接失败，导致 dtbo 数据目录被判为不可写。所有用到 `mkdir -p` 的脚本改为跳过已存在的目录、只创建缺的那一级
+- 其它功能与 v8.7.2 相同
+
+刷入包：[`releases/Micharge-boost_v8.7.3.zip`](releases/Micharge-boost_v8.7.3.zip)　md5：`795353b6201b32d00a6ce5e2f3f532b5`
+
 ## v8.7.2（2026-11-14）
 
 合并 v8.7.0 / v8.7.1 / v8.7.2 的全部改动（相比 v8.6.5）。

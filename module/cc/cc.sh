@@ -1,4 +1,6 @@
 #!/system/bin/sh
+# 部分系统（ColorOS 移植等）上 mkdir("/") 返回 EINVAL，busybox/toybox 的 mkdir -p 会从 / 开始逐级创建而直接失败：改为跳过已存在的目录、只创建缺的那级
+mkdir(){ if [ "$1" = -p ]; then shift; _r=0; for _d in "$@"; do case $_d in /*) _p=;; *) _p=.;; esac; _o=$IFS; IFS=/; set -f; for _c in $_d; do [ -z "$_c" ] && continue; _p=$_p/$_c; [ -d "$_p" ] || command mkdir "$_p" || { _r=1; break; }; done; set +f; IFS=$_o; done; return $_r; else command mkdir "$@"; fi; }
 # 实时充电电流（免重启）：写 MCA charger_thermal/wired_chg_curr（单位 uA），充电中改动即时生效
 # 配置 $D/cc: "<开关0|1> <电流mA>"
 D=/data/adb/mi_charge_boost; mkdir -p $D
