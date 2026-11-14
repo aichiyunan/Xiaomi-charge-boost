@@ -24,7 +24,7 @@
 
 md5：`3ff7fbd0b85f2088196d6a0325cf38e0`
 
-> v8.7.2 起只发布 Micharge-boost 一个刷入包，Mi8Elite 专版停止更新。
+> v8.6.5 起只发布 Micharge-boost 一个刷入包，Mi8Elite 专版停止更新。
 
 ---
 
