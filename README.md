@@ -1,8 +1,8 @@
 <div align="center">
 
-# ⚡ Mi8Elite-charge-boost 充电加速
+# ⚡ Xiaomi-charge-boost 充电加速
 
-**小米 / 红米 骁龙 8 至尊版系列充电增强模块**
+**小米 / 红米 骁龙系列充电增强模块**
 
 ![version](https://img.shields.io/badge/version-v8.6.4-orange)
 ![device](https://img.shields.io/badge/device-Xiaomi%2015%20%7C%2015%20Pro%20%7C%20K80%20Pro%20%7C%20K90%20%7C%20K90%20Ultra-blue)
