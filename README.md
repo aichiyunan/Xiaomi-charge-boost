@@ -4,8 +4,9 @@
 
 **小米 / 红米 骁龙系列充电增强模块**
 
-![version](https://img.shields.io/badge/version-v8.6.4-orange)
-![device](https://img.shields.io/badge/device-Xiaomi%2015%20%7C%2015%20Pro%20%7C%20K80%20Pro%20%7C%20K90%20%7C%20K90%20Ultra-blue)
+![version](https://img.shields.io/badge/version-v8.7.1-orange)
+![soc](https://img.shields.io/badge/SoC-SM8750%20%7C%20SM8850%20%7C%20SM8950%20%7C%20SM8975-blue)
+![kernel](https://img.shields.io/badge/kernel-6.6%20%7C%206.12%20%7C%206.18-blueviolet)
 ![root](https://img.shields.io/badge/root-KernelSU%20%7C%20Magisk-green)
 ![author](https://img.shields.io/badge/author-酷安@鱼楠-red)
 
@@ -17,12 +18,13 @@
 
 | 文件 | 说明 |
 | --- | --- |
-| [`releases/Mi8Elite-charge-boost_v8.6.4.zip`](releases/Mi8Elite-charge-boost_v8.6.4.zip) | 机型专版：仅五款已适配机型，刷入校验机型，其它机型拒绝；dtbo 逐项比对 |
-| [`releases/Micharge-boost_v8.6.4.zip`](releases/Micharge-boost_v8.6.4.zip) | 通用版：不校验机型，其它带原厂 MCA 快充的小米/红米机型也能刷（dtbo 逐项比对） |
-| [`module/`](module/) | 模块完整源码（通用版） |
+| [`releases/Micharge-boost_v8.7.1.zip`](releases/Micharge-boost_v8.7.1.zip) | 刷入包：已适配机型按模板写入；同处理器的其它小米/红米机型按通用模式安装（dtbo 逐项比对） |
+| [`module/`](module/) | 模块完整源码 |
 | [`CHANGELOG.md`](CHANGELOG.md) | 全部版本更新日志（v8.0.7 起，历史刷入包在 `releases/`） |
 
-md5：Mi8Elite `8c772ffe3a60f41ea2a85fcc6b8305ef`，Micharge `d6df1b747eab69ab6a477d49dfc17f5d`
+md5：`3ff7fbd0b85f2088196d6a0325cf38e0`
+
+> v8.6.5 起只发布 Micharge-boost 一个刷入包，Mi8Elite 专版停止更新。
 
 ---
 
@@ -31,25 +33,25 @@ md5：Mi8Elite `8c772ffe3a60f41ea2a85fcc6b8305ef`，Micharge `d6df1b747eab69ab6a
 ### 🔋 DTBO 充电参数修改（重启生效）
 | 选项 | 可选值 | 说明 |
 | --- | --- | --- |
-| 快充电流 | 原厂值 / 模块上限 / 不修改 | 小米15 为 15.5A / 20.5A；K80 Pro 上限 22A |
+| 快充电流 | 原厂值 / 模块上限 / 不修改 | 小米15 为 15.5A / 20.5A；K80 Pro 上限 22A；6.12 / 6.18 新机型上限 20.5A |
 | 满速/断充温度 | 55°C / 不修改 | 设定温度以下满速，超过才停充（原厂 48°C） |
 | 内核关机电压 | 2800mV / 不修改 | 电池电压降到 2800mV 才关机 |
 | 屏幕超频 | 165Hz / 不超频 | 仅小米15：华星屏添加 132 / 144 / 155 / 165Hz 档位 |
 
+- 模板按处理器代号分目录：`dtbo/8750/`、`dtbo/8850/`、`dtbo/8950/`、`dtbo/8975/`
 - 关闭循环降压与降流：drop_fv_cycle 改 0，drop_fcc_para 循环门槛改 65535
-- 刷入前自动备份当前 dtbo 为原厂镜像，卸载模块即还原
+- 刷入前自动按 A/B 槽位备份当前 dtbo 为原厂镜像，卸载模块即还原；写入校验失败自动回滚
 - 已收录原厂镜像按机型模板写入；未收录镜像（官改包、新底包）自动备份并逐项比对原厂值，只写吻合的项
-- 官改或非收录镜像可选择「以当前镜像修改刷入」
-- 保留原厂 AVB 签名结构与 salt
+- 6.12 起多 entry 的 dtbo 逐个 entry 修改并重算 AVB 哈希，保留原厂签名结构与 salt
+- WebUI 可调满充截止电压；小米15 可选充电泵过压放宽 50mV
 
 ### 🔌 公版 PPS 解锁
 内置 FreePPS v1.7.0（Seyud / 酷安@瓦力喀，GPL-3.0），第三方 PPS 充电头放行高功率快充，小米原装头照常走私有协议。已启用 FreePPS 模块时内置版自动让出。
 
 ### 🌡️ 免重启调节
 - **温控解除**：关闭有线充电温控降速（`wired_thermal_remove`）
-- **实时充电电流**：充电中直接改 `wired_chg_curr`，立即生效
-- **私有协议功率**：小米15 / 15 Pro 可切 100W / 120W，K90 系列 120W，K80 Pro 原厂已 120W
-- **原装头握手重试**（实验性，默认关）：插入 20 秒仍未进电荷泵快充时自动重走认证
+- **私有协议功率**：小米15 / 15 Pro 可切 100W / 120W，K90 系列 120W，K80 Pro 原厂已 120W；6.12 / 6.18 新机型暂不提供
+- **实验性功能**：快充断流秒恢复、原装头握手重试、实时充电电流与断充温控墙
 
 ### 🪫 低电量延迟关机
 电量锁定 2%，屏蔽 0% 关机与 30 秒倒计时，电池电压降到设定值后才关机。
@@ -67,12 +69,18 @@ md5：Mi8Elite `8c772ffe3a60f41ea2a85fcc6b8305ef`，Micharge `d6df1b747eab69ab6a
 
 ## 📱 适用范围
 
-| 项目 | 支持 |
-| --- | --- |
-| 机型 | 小米15（dada）、小米15 Pro（haotian）、红米K80 Pro（miro）、红米K90（annibale）、红米K90至尊版（warsaw）已适配；其他机型按通用模式安装，dtbo 逐项比对原厂值，只写吻合的项 |
-| 系统（小米15） | HyperOS OS4.0.0.6 / 7 / 8 / 16 / 19，OS3.0.2 / 301 / 302 / 303 / 305 / 307 |
-| 移植包 | ColorOS 16.1 移植包（自动识别官改 dtbo） |
-| Root | KernelSU / Magisk |
+| 处理器 | 内核 | 已适配机型 |
+| --- | --- | --- |
+| SM8750 骁龙8至尊版 | 6.6 | 小米15、小米15 Pro、红米K80 Pro、红米K90、红米K90至尊版 |
+| SM8850 第五代骁龙8至尊版 | 6.12 | 小米17、17 Pro、17 Pro Max、17 Ultra、17 Max，红米K90 Pro Max、K100 Pro、K100 Pro Max |
+| SM8950 | 6.18 | 小米18 Pro |
+| SM8975 | 6.18 | 小米18 Pro Max |
+
+- 刷入时校验：非小米 / 红米机型、非以上四款处理器（含天玑、玄戒）直接退出安装，模块不刷入；内核版本只识别显示
+- 以上处理器的其它小米 / 红米机型按通用模式安装，dtbo 逐项比对原厂值，只写吻合的项
+- 天玑、玄戒处理器不做适配
+- 小米15 系统：HyperOS OS4.0.0.6 / 7 / 8 / 16 / 19，OS3.0.2 / 301 / 302 / 303 / 305 / 307；支持 ColorOS 16.1 移植包（自动识别官改 dtbo）
+- Root：KernelSU / Magisk
 
 ---
 
@@ -86,7 +94,7 @@ md5：Mi8Elite `8c772ffe3a60f41ea2a85fcc6b8305ef`，Micharge `d6df1b747eab69ab6a
 
 ## ⚠️ 风险提示
 
-修改 DTBO 与充电参数存在风险，大电流、高温充电会加速电池老化。请确认机型与系统版本后再刷入，作者不对任何损坏负责。
+修改 DTBO 与充电参数存在风险，大电流、高温充电会加速电池老化。请确认机型与系统版本后再刷入，作者不对任何损坏负责。6.12 / 6.18 新机型模板来自官方卡刷包，建议先在一台设备上验证。
 
 ---
 

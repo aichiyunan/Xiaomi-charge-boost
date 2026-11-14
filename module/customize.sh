@@ -1,10 +1,24 @@
 SKIPUNZIP=0
-# 机型识别（v8.5.9 起不做机型校验，只识别型号）：已适配机型用表内参数，其它机型按通用参数安装
+# 机型识别（v8.5.9 起不做机型校验，只识别型号；v8.7.1 起校验处理器型号，非适配处理器退出安装；内核只识别）：已适配机型用表内参数，其它机型按通用参数安装
 # 移植系统 product 属性可能被改，优先认 vendor/odm 底包属性和 /vendor/build.prop（sysinfo.sh 同逻辑）
 MCB_ROOT=$MODPATH; . $MODPATH/models.sh
 CODE=$(detect_code)
 case "$CODE" in ""|unknown) CODE=$(getprop ro.product.vendor.device); CODE=${CODE:-$(getprop ro.product.device)}; CODE=${CODE:-unknown};; esac
 model_load "$CODE"
+# v8.7.1：先校验品牌（非小米红米退出），再识别处理器型号，非适配处理器（含天玑、玄戒）直接退出安装；内核版本只识别显示
+KV=$(uname -r 2>/dev/null)
+if ! BRD=$(brand_check); then
+  ui_print "********************"; ui_print " 小米/红米充电加速模块"; ui_print "********************"
+  ui_print "! 非小米 / 红米机型：品牌 $BRD（$(getprop ro.product.model)）"
+  ui_print "! 本模块只适配小米、红米手机"
+  abort "! 已退出安装，模块未刷入"
+fi
+if ! PCR=$(platform_check "$SOC"); then
+  ui_print "********************"; ui_print " 小米/红米充电加速模块"; ui_print "********************"
+  ui_print "! 非适配机型：处理器 $PCR，内核 ${KV:-未知}"
+  ui_print "! 本模块只适配骁龙 SM8750 / SM8850 / SM8950 / SM8975"
+  abort "! 已退出安装，模块未刷入"
+fi
 # 按机型写模块名与机型代号（运行时脚本、WebUI 读 $MODPATH/model）
 echo $CODE > $MODPATH/model
 sed -i "s|^name=.*|name=$MODNAME|" $MODPATH/module.prop
@@ -119,6 +133,7 @@ out "********************"
 $(sh $MODPATH/sysinfo.sh)
 EOF
 out "- 设备: $SI_N ($SI_D)　系统: $SI_O${SI_B:+（底包 $SI_B）}"
+out "- 处理器: $PCR　内核: ${KV:-未知}"
 out "- 音量+ 切换　音量- 确认　15 秒不操作选默认"
 IS_DADA=0; [ "$CODE" = dada ] && IS_DADA=1
 [ "$SI_D" = "$CODE" ] || out "- 机型代号按底包属性识别为 $CODE（$MN）"

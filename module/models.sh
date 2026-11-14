@@ -27,7 +27,7 @@ model_info(){
   esac
   MODNAME="${MN}充电加速模块"; return 0
 }
-# 通用加载（v8.5.9）：已适配机型用表内参数；未适配机型只识别型号、不拦截，按通用参数运行
+# 通用加载（v8.5.9）：已适配机型用表内参数；未适配机型按通用参数运行（v8.7.1 起先过 platform_check，处理器不是 SM8750/8850/8950/8975 直接退出安装）
 # GEN=1 表示未适配机型：电流上限 20500、无私有协议档位、无屏幕超频，FFC 截止电压等一律保持本机原厂（dtbo 逐项比对，只写原厂值吻合的项）
 model_load(){
   if model_info "$1"; then GEN=0; return 0; fi
@@ -38,6 +38,32 @@ model_load(){
 model_names(){ echo "小米15 / 小米15 Pro / 红米K80 Pro / 红米K90 / 红米K90至尊版 / 小米17 / 17 Pro / 17 Pro Max / 17 Ultra / 17 Max / 红米K90 Pro Max / 红米K100 Pro / K100 Pro Max / 小米18 Pro / 18 Pro Max"; }
 # 未适配机型的处理器代号：ro.soc.model（SM8850 → 8850），读不到为空（逐项比对时用全部模板）
 soc_code(){ for k in ro.soc.model ro.vendor.soc.model ro.boot.hardware.sku; do v=$(getprop $k); case "$v" in SM[0-9][0-9][0-9][0-9]*) v=${v#SM}; echo ${v%%[!0-9]*}; return;; esac; done; }
+# 处理器校验（v8.7.1）：只支持高通骁龙 SM8750/8850/8950/8975；天玑、玄戒后续不做适配。内核版本只识别显示，不拦截
+# 输出处理器描述；返回 1 = 非适配机型。$1 = 机型表 SOC（已适配机型读不到 ro.soc.model 时兜底）
+SOCS="8750 8850 8950 8975"
+kernel_ver(){ uname -r 2>/dev/null | sed -n 's/^\([0-9]*\.[0-9]*\).*/\1/p'; }
+platform_check(){
+  mf=$(getprop ro.soc.manufacturer); sm=$(getprop ro.soc.model); hw="$(getprop ro.board.platform) $(getprop ro.hardware) $(getprop ro.boot.hardware)"
+  case "$mf $sm $hw" in
+    *[Mm]ediatek*|*MEDIATEK*|*MT[0-9][0-9][0-9][0-9]*|*\ mt[0-9][0-9][0-9][0-9]*) echo "天玑 ${sm:-${mf:-${hw%% *}}}"; return 1;;
+    *[Xx][Rr][Ii][Nn][Gg]*) echo "玄戒 ${sm:-$mf}"; return 1;;
+  esac
+  case "$mf" in [Xx]iaomi*|XIAOMI*) echo "玄戒 ${sm:-$mf}"; return 1;; esac
+  s=$(soc_code); [ -n "$s" ] || s=$1
+  [ -n "$s" ] || { echo "未知（ro.soc.model=${sm:-空}）"; return 1; }
+  case " $SOCS " in *" $s "*) echo "骁龙 SM$s"; return 0;; esac
+  echo "骁龙 SM$s"; return 1
+}
+# 品牌校验（v8.7.1）：只装小米 / 红米。优先读 vendor/odm 底包属性（移植系统 product 属性可能被改）
+# 输出品牌；返回 1 = 非小米红米机型
+brand_check(){
+  b=""; for k in ro.product.vendor.brand ro.product.odm.brand ro.product.vendor.manufacturer ro.product.odm.manufacturer ro.product.brand ro.product.manufacturer; do
+    v=$(getprop $k); [ -n "$v" ] || continue; [ -n "$b" ] || b=$v
+    case "$v" in [Xx]iaomi*|XIAOMI*|[Rr]edmi*|REDMI*) echo "$v"; return 0;; esac; done
+  v=$(grep -hE '^ro\.product\.(vendor\.)?(brand|manufacturer)=' /vendor/build.prop /odm/etc/build.prop 2>/dev/null | grep -iE '=(xiaomi|redmi)' | head -1)
+  [ -n "$v" ] && { echo "${v#*=}"; return 0; }
+  echo "${b:-未知}"; return 1
+}
 # 识别机型代号：sysinfo.sh（移植系统优先读 vendor/odm）→ 其它属性 → 分区 build.prop
 detect_code(){
   c=$(sh ${MCB_ROOT:-${0%/*}}/sysinfo.sh 2>/dev/null | sed -n 2p)
