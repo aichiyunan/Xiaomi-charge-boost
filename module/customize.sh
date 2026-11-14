@@ -7,10 +7,11 @@ case "$CODE" in ""|unknown) CODE=$(getprop ro.product.vendor.device); CODE=${COD
 model_load "$CODE"
 # v8.7.1：先校验品牌（非小米红米退出），再识别处理器型号，非适配处理器（含天玑、玄戒）直接退出安装；内核版本只识别显示
 KV=$(uname -r 2>/dev/null)
-if ! BRD=$(brand_check); then
+if ! BRD=$(brand_check "$CODE"); then
   ui_print "********************"; ui_print " 小米/红米充电加速模块"; ui_print "********************"
   ui_print "! 非小米 / 红米机型：品牌 $BRD（$(getprop ro.product.model)）"
   ui_print "! 本模块只适配小米、红米手机"
+  ui_print "! 底包识别：代号 ${CODE:-未知}，底包 $(sh $MODPATH/sysinfo.sh 2>/dev/null | sed -n 4p | grep . || echo 未识别)"
   abort "! 已退出安装，模块未刷入"
 fi
 if ! PCR=$(platform_check "$SOC"); then
@@ -193,6 +194,13 @@ if true; then
   else
     ui_print "- dtbo 不修改"
   fi
+fi
+# v8.7.2：dtbo 刷入失败直接退出安装（模块不刷入、充电监测软件也不装）；全部选「不修改」不算失败
+if [ "$DI$DT$DV$DZ" != "----" ] && [ $DR != 0 ]; then
+  ui_print " "
+  ui_print "! dtbo 刷入失败，已退出安装：模块未刷入，充电监测软件未安装"
+  grep -q '回滚失败' $DO && ui_print "! 回滚失败，分区内容不确定：请勿重启，先手动刷回原厂 dtbo"
+  abort "! 请把上面的 dtbo 写入过程截图反馈"
 fi
 [ $MV -gt 0 ] && ui_print "- 低电量延迟关机: 启用（${MV}mV，WebUI 可调）" || ui_print "- 低电量延迟关机: 不启用"
 if [ $PPS = 1 ]; then

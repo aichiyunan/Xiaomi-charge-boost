@@ -54,9 +54,20 @@ platform_check(){
   case " $SOCS " in *" $s "*) echo "骁龙 SM$s"; return 0;; esac
   echo "骁龙 SM$s"; return 1
 }
-# 品牌校验（v8.7.1）：只装小米 / 红米。优先读 vendor/odm 底包属性（移植系统 product 属性可能被改）
-# 输出品牌；返回 1 = 非小米红米机型
+# 品牌校验（v8.7.1，v8.7.2 修移植包误判）：只装小米 / 红米。
+# 移植包（ColorOS 等）会把 vendor/odm 的 brand/manufacturer 一起改成别家，所以按「底包」判断，依次：
+#  1. 机型代号已识别为已适配小米机型（$1 = detect_code 结果）
+#  2. 底包是 HyperOS/MIUI（sysinfo.sh 第 4 行，读 vendor/odm/vendor_dlkm 版本号与指纹）
+#  3. vendor/odm/bootimage/vendor_dlkm 指纹或分区 build.prop 原文带 Xiaomi/Redmi/POCO
+#  4. 品牌/厂商属性是 Xiaomi/Redmi
+# 输出品牌（或识别依据）；返回 1 = 非小米红米机型
 brand_check(){
+  model_info "$1" >/dev/null 2>&1 && { echo "小米（机型代号 $1）"; return 0; }
+  bs=$(sh ${MCB_ROOT:-${0%/*}}/sysinfo.sh 2>/dev/null | sed -n 4p)
+  case "$bs" in OS[0-9]*|V[0-9]*) echo "小米（底包 $bs）"; return 0;; esac
+  for k in ro.vendor.build.fingerprint ro.odm.build.fingerprint ro.vendor_dlkm.build.fingerprint ro.bootimage.build.fingerprint; do
+    case "$(getprop $k)" in [Xx]iaomi/*|XIAOMI/*|[Rr]edmi/*|REDMI/*|POCO/*|[Pp]oco/*) echo "小米（底包指纹）"; return 0;; esac; done
+  grep -qhiE '^ro\.(vendor|odm|vendor_dlkm|bootimage)\.build\.fingerprint=(xiaomi|redmi|poco)/' /vendor/build.prop /odm/etc/build.prop /vendor/odm/etc/build.prop /vendor_dlkm/etc/build.prop 2>/dev/null && { echo "小米（底包指纹）"; return 0; }
   b=""; for k in ro.product.vendor.brand ro.product.odm.brand ro.product.vendor.manufacturer ro.product.odm.manufacturer ro.product.brand ro.product.manufacturer; do
     v=$(getprop $k); [ -n "$v" ] || continue; [ -n "$b" ] || b=$v
     case "$v" in [Xx]iaomi*|XIAOMI*|[Rr]edmi*|REDMI*) echo "$v"; return 0;; esac; done

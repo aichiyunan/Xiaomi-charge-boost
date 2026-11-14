@@ -16,17 +16,26 @@ MCB_ROOT=${H%/*}; . $MCB_ROOT/models.sh
 tpf(){ for f in $TD/$1.tpl $H/*/$1.tpl; do [ -f "$f" ] && { echo $f; return 0; }; done; return 1; }
 H8=$H/8750
 # 数据目录必须可写：移植系统上可能出现属主/SELinux 标签不对导致 Permission denied，先修复，修不好换备用目录
-okw(){ mkdir -p "$1" 2>/dev/null && touch "$1/.w" 2>/dev/null && rm -f "$1/.w"; }
+# v8.7.2：记录真实报错（以前一律显示 Permission denied，看不出原因）
+okw(){ OKE=$(mkdir -p "$1" 2>&1) && OKE=$(touch "$1/.w" 2>&1) && rm -f "$1/.w"; }
+# 路径上有同名普通文件/坏链接（旧版或其它软件留下）会导致 mkdir 失败：改名挪开，不删除
+fixnd(){ p=$1; while [ "$p" != /data/adb ] && [ -n "$p" ]; do
+  if [ -e "$p" -o -L "$p" ] && [ ! -d "$p" ]; then mv -f "$p" "$p.notdir.$(date +%s)" 2>/dev/null; fi; p=${p%/*}; done; }
+# 诊断信息：属主/标签/属性/剩余空间/挂载状态
+diagw(){ echo "  报错: ${OKE:-无}"
+  for x in /data/adb ${1%/dtbo} $1; do [ -e "$x" -o -L "$x" ] && echo "  $(ls -ldZ $x 2>/dev/null)  $(lsattr -d $x 2>/dev/null | cut -d' ' -f1)"; done
+  echo "  /data 剩余: $(df -h /data 2>/dev/null | awk 'NR==2{print $4}')　挂载: $(grep -m1 ' /data ' /proc/mounts | awk '{print $4}' | cut -d, -f1)　SELinux: $(getenforce 2>/dev/null)　身份: $(id -u) $(cat /proc/self/attr/current 2>/dev/null | tr -d '\0')"; }
 F=/data/adb/.mcb_dtbo
 S=$(getprop ro.boot.slot_suffix)
 hasbk(){ for f in "$1"/stock.img "$1"/stock_?.img; do [ -f "$f" ] && return 0; done; return 1; }   # 不含 stock.unclaimed.img / stock_?.old.img
 if [ -z "$DTBO_D" ] && hasbk $F; then D=$F
 elif ! okw $D; then
+  fixnd $D
   R=${D%/dtbo}; chattr -R -i $R 2>/dev/null; chown -R 0:0 $R 2>/dev/null; chmod -R u+rwX,go+rX $R 2>/dev/null
   chcon -R u:object_r:adb_data_file:s0 $R 2>/dev/null
   if ! okw $D; then
     if [ -z "$DTBO_D" ] && okw $F; then chcon -R u:object_r:adb_data_file:s0 $F 2>/dev/null; D=$F
-    else echo "! 数据目录 $D 不可写（Permission denied）"; exit 1; fi
+    else okw $D; echo "! 数据目录 $D 不可写"; diagw $D; exit 1; fi
   fi
 fi
 BLK=/dev/block/by-name/dtbo$S; [ -e $BLK ] || BLK=/dev/block/bootdevice/by-name/dtbo$S
