@@ -4,7 +4,7 @@
 
 **小米 / 红米 骁龙系列充电增强模块**
 
-![version](https://img.shields.io/badge/version-v8.7.3-orange)
+![version](https://img.shields.io/badge/version-v8.7.5-orange)
 ![soc](https://img.shields.io/badge/SoC-SM8750%20%7C%20SM8850%20%7C%20SM8950%20%7C%20SM8975-blue)
 ![kernel](https://img.shields.io/badge/kernel-6.6%20%7C%206.12%20%7C%206.18-blueviolet)
 ![root](https://img.shields.io/badge/root-KernelSU%20%7C%20Magisk-green)
@@ -18,11 +18,11 @@
 
 | 文件 | 说明 |
 | --- | --- |
-| [`releases/Micharge-boost_v8.7.3.zip`](releases/Micharge-boost_v8.7.3.zip) | 刷入包：已适配机型按模板写入；同处理器的其它小米/红米机型按通用模式安装（dtbo 逐项比对） |
+| [`releases/Micharge-boost_v8.7.5.zip`](releases/Micharge-boost_v8.7.5.zip) | 刷入包：已适配机型按模板写入；同处理器的其它小米/红米机型按通用模式安装（dtbo 逐项比对） |
 | [`module/`](module/) | 模块完整源码 |
 | [`CHANGELOG.md`](CHANGELOG.md) | 全部版本更新日志（v8.0.7 起，历史刷入包在 `releases/`） |
 
-md5：`795353b6201b32d00a6ce5e2f3f532b5`
+md5：`0fe49ed19273b8901c46b10d80026340`
 
 > v8.6.5 起只发布 Micharge-boost 一个刷入包，Mi8Elite 专版停止更新。
 

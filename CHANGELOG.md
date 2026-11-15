@@ -2,6 +2,14 @@
 
 所有版本刷入包都在 [`releases/`](releases/) 目录。
 
+## v8.7.5（2026-11-16）
+
+- 补全 HyperOS 2 / 3 模板：红米 K90 Pro Max 在 OS3.0.310 上无效（之前只有 OS4 模板）；从 Micharge-ko 移植 18 个 OS2 / OS3 模板（haotian、miro、athens、myron、nezha、pandora、popsicle、pudding、songyuan）并同步 stock.list
+- 修复 K100 Pro / K100 Pro Max / K80 Pro OS2 模板缺快充表、K90 Pro Max 缺 gbl 表
+- 其它功能与 v8.7.3 相同；新增模板未真机测试
+
+刷入包：[`releases/Micharge-boost_v8.7.5.zip`](releases/Micharge-boost_v8.7.5.zip)　md5：`0fe49ed19273b8901c46b10d80026340`
+
 ## v8.7.3（2026-11-14）
 
 - 修复部分系统（如 ColorOS 移植包）刷入失败：「mkdir: can't create directory '/': Invalid argument」。这类系统上 mkdir("/") 返回 EINVAL，`mkdir -p` 从根目录逐级创建时直接失败，导致 dtbo 数据目录被判为不可写。所有用到 `mkdir -p` 的脚本改为跳过已存在的目录、只创建缺的那一级
